@@ -1,7 +1,8 @@
 package com.main.project;
 
 
-import java.io.IOException;
+
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +26,17 @@ public class Mycontroller {
 	public MyService myService;
 	
     @PostMapping("/upload")
-    public ResponseEntity<String> saveUsersFromExcel(@RequestParam MultipartFile file) throws IOException {
-    		myService.savedata(file.getInputStream());
+    public ResponseEntity<String> saveUsers(@RequestParam MultipartFile file) {
+    		if(myService.checkExcelFormat(file)) {
+    		myService.save(file);
 			return ResponseEntity.ok("File imported successfully");
+    		}
+			return ResponseEntity.badRequest().body("Invalid file Selected");
         }
     
     @GetMapping("/getdata")
     public ResponseEntity<List<User>> getUser(){
-		return ResponseEntity.ok(myService.getallUsers());
-    	
+		return ResponseEntity.ok(myService.getallusers());
     }
     
 }  

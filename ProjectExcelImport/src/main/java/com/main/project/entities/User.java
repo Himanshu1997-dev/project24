@@ -25,7 +25,7 @@ public class User {
 	@Column(nullable = false, unique = false)
 	private String state;
 	@Column(nullable = false, unique = false)
-	private int contact;
+	private long contact;
 	@Column(nullable = false, unique = true)
 	private String email;
 	
@@ -61,10 +61,10 @@ public class User {
 	public void setState(String state) {
 		this.state = state;
 	}
-	public int getContact() {
+	public long getContact() {
 		return contact;
 	}
-	public void setContact(int contact) {
+	public void setContact(long contact) {
 		this.contact = contact;
 	}
 	public String getEmail() {
@@ -73,6 +73,4 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
-	
 }
