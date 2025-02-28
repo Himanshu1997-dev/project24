@@ -3,12 +3,14 @@ package com.main.project.service;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.main.project.entities.User;
 import com.main.project.repo.UserRepository;
-
+import java.lang.Object; 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,16 +25,6 @@ public class MyService {
 
     public boolean checkExcelFormat(MultipartFile file) {
         return file.getContentType().equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    }
-
-    public void save(MultipartFile file) {
-        try {
-            InputStream is = file.getInputStream();
-            List<User> users = convertToExcel(is);
-            insertUsers(users);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private List<User> convertToExcel(InputStream inputStream) throws IOException {
@@ -74,20 +66,65 @@ public class MyService {
         return list;
     }
 
-    private void insertUsers(List<User> users) {
-        String sql = "INSERT INTO data (id, name, fathername, city, state, contact, email) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        List<Object[]> batchArgs = new ArrayList<>();
-        for (User user : users) {
-            batchArgs.add(new Object[]{
-                    user.getId(), user.getName(), user.getFathername(),
-                    user.getCity(), user.getState(), user.getContact(), user.getEmail()
-            });
+    
+    
+    public void save(MultipartFile file) {
+        try {
+            List<User> users = convertToExcel(file.getInputStream());
+            for(User user : users) {
+			User existingUser = findbyID(user.getId());
+            if(existingUser != null) {
+            	insertUsers(users);}else {
+            updateUsers(users);}
+        }} catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        } catch (IOException e) { 
+            e.printStackTrace();
         }
-
-        jdbcTemplate.batchUpdate(sql, batchArgs);
     }
     
+    
+    private User findbyID(int id) {
+    	String sql = "SELECT * FROM data WHERE id = ?";
+		return jdbcTemplate.queryForObject(sql,new BeanPropertyRowMapper<>(User.class),id);
+    }
+    
+	    private void insertUsers(List<User> users) {
+	        String sql = "INSERT INTO data (id, name, fathername, city, state, contact, email) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	
+	        for (int i = 0; i < users.size(); i++) {  
+	            User user = users.get(i);
+	        	jdbcTemplate.update(sql, user.getId(), user.getName(), user.getFathername(),
+	                    user.getCity(), user.getState(), user.getContact(), user.getEmail());
+	        }
+    }
+    
+	    
+	    	    
+	    public void updateUsers(List<User> users) {
+	        for (int i = 0; i < users.size(); i++) { 
+	            User user = users.get(i);
+	            StringBuilder sql = new StringBuilder("UPDATE data SET ");
+	            List<Object> values = new ArrayList<>();
+
+	            if (user.getName() != null) { sql.append("name = ?, "); values.add(user.getName()); }
+	            if (user.getFathername() != null) { sql.append("fathername = ?, "); values.add(user.getFathername()); }
+	            if (user.getCity() != null) { sql.append("city = ?, "); values.add(user.getCity()); }
+	            if (user.getState() != null) { sql.append("state = ?, "); values.add(user.getState()); }
+	            if (user.getContact()>0L) { sql.append("contact = ?, "); values.add(user.getContact()); }
+	            if (user.getEmail() != null) { sql.append("email = ?, "); values.add(user.getEmail()); }
+	            if (values.isEmpty()) continue;
+
+	            sql.setLength(sql.length() - 2);
+	            sql.append(" WHERE id = ?");
+	            values.add(user.getId());
+
+	            jdbcTemplate.update(sql.toString(), values.toArray());
+	        }
+	    }
+	    
+	    
+	    
     @Autowired UserRepository userRepository;
     
     public List<User> getallusers(){

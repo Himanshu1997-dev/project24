@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.main.project.entities.User;
 import com.main.project.service.MyService;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -35,8 +37,16 @@ public class Mycontroller {
         }
     
     @GetMapping("/getdata")
-    public ResponseEntity<List<User>> getUser(){
+    public ResponseEntity<List<User>> getUsers(){
 		return ResponseEntity.ok(myService.getallusers());
     }
     
+    @PutMapping("/update")
+    public ResponseEntity<String> updateUsers(@RequestParam MultipartFile file) {
+        if (myService.checkExcelFormat(file)) {
+            myService.save(file);
+            return ResponseEntity.ok("Data Updated successfully");
+        }
+        return ResponseEntity.badRequest().body("Invalid file Selected");
+    }
 }  

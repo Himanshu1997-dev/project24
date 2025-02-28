@@ -26,7 +26,7 @@ public class User {
 	private String state;
 	@Column(nullable = false, unique = false)
 	private long contact;
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false, unique = false)
 	private String email;
 	
 	
