@@ -3,7 +3,6 @@ package com.main.project.service;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -70,21 +69,16 @@ public class MyService {
     
     public void save(MultipartFile file) {
         try {
-            List<User> users = convertToExcel(file.getInputStream());
-            for(User user : users) {
-			User existingUser = findbyID(user.getId());
-            if(existingUser != null) {
-            	insertUsers(users);}else {
-            updateUsers(users);}
-        }} catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
-        } catch (IOException e) { 
+            List<User> users = convertToExcel(file.getInputStream());  
+            insertUsers(users);
+            }
+        catch (IOException e) { 
             e.printStackTrace();
         }
     }
     
     
-    private User findbyID(int id) {
+    public User findbyID(int id) {
     	String sql = "SELECT * FROM data WHERE id = ?";
 		return jdbcTemplate.queryForObject(sql,new BeanPropertyRowMapper<>(User.class),id);
     }
@@ -98,6 +92,12 @@ public class MyService {
 	                    user.getCity(), user.getState(), user.getContact(), user.getEmail());
 	        }
     }
+	    
+	    
+	    public void deleteUsers(int id) {
+	    	String sql = "Delete from data Where id = ? ";
+	    	jdbcTemplate.update(sql,id);
+	    }
     
 	    
 	    	    
