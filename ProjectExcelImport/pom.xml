@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.jap.test</groupId>
-	<artifactId>ProjectExcelImport</artifactId>
+	<artifactId>ExcelImport</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ProjectExcelImport</name>
+	<name>ExcelImport</name>
 	<description>This is a project learning concepts</description>
 	<url/>
 	<licenses>
