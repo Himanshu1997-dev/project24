@@ -1,18 +1,46 @@
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Greeting App</title>
   <style>
     body {
       text-align: center;
-      margin-top: 50px;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    p {
+      font-size: 18px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <input type="text" id="nameInput" placeholder="Enter your name">
-  <button id="getGreetingButton">Get Greeting</button>
+
+  <h2>Welcome to the Greeting App</h2>
+
+  <div>
+    <input type="text" id="nameInput" placeholder="Enter your name">
+    <button id="getGreetingButton">Get Greeting</button>
+  </div>
   <p id="greetingMessage"></p>
 
   <script src="script.js"></script>
+
 </body>
 </html>
